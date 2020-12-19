@@ -2,12 +2,6 @@
 
 import numpy as np
 class dstu8848:
-#     self.S = []
-#     self.r = []
-#     self.key = []
-#     self.iv = []
-#     self.key_size = []
-    # S = [0] * 16
     S = np.zeros(16, dtype = np.uint64)
     r = np.zeros(2, dtype = np.uint64)
     key = np.zeros(8, dtype = np.uint64)
@@ -679,16 +673,14 @@ class dstu8848:
     def __init__(self, key, key_size, iv):
         if key_size == 32:
             self.key_size = key_size
-#             memcpy(self.iv, iv, 32)
-#             memcpy(self.key, key, 32)
             self.iv = iv
             self.key = key
-            self.S[0] = self.key[3] ^ self.iv[0]
+            self.S[0] = np.bitwise_xor(self.key[3], self.iv[0])
             self.S[1] = self.key[2]
-            self.S[2] = self.key[1] ^ self.iv[1]
-            self.S[3] = self.key[0] ^ self.iv[2]
+            self.S[2] = np.bitwise_xor(self.key[1], self.iv[1])
+            self.S[3] = np.bitwise_xor(self.key[0], self.iv[2])
             self.S[4] = self.key[3]
-            self.S[5] = self.key[2] ^ self.iv[3]
+            self.S[5] = np.bitwise_xor(self.key[2], self.iv[3])
             self.S[6] = np.bitwise_not(self.key[1])
             self.S[7] = np.bitwise_not(self.key[0])
             self.S[8] = self.key[3]
@@ -701,8 +693,6 @@ class dstu8848:
             self.S[15] = np.bitwise_not(self.key[0])
         elif (key_size == 64):
             self.key_size = key_size
-#             memcpy(self.iv, iv, 32)
-#             memcpy(self.key, key, 64)
             self.iv = iv
             self.key = key
             # print(type(self.key[7]), type(self.iv[0]), self.key[7], self.iv[0])
@@ -868,16 +858,19 @@ class dstu8848:
             
     def byte(self, n, w):
         # return (((w)>>(n*8)) & 0xff)
-        return np.bitwise_and(np.right_shift(w, np.uint64(n * 8)), np.uint64(0xff))
+        return np.bitwise_and(np.right_shift(w, np.uint64(n * 8)),
+                              np.uint64(0xff))
         
         
     def ainv_mul(self, w):
-        return np.bitwise_xor(np.right_shift(w, np.uint64(8)), self.strumok_alphainv_mul[np.bitwise_and(w, np.uint64(0xff))])
+        return np.bitwise_xor(np.right_shift(w, np.uint64(8)),
+                              self.strumok_alphainv_mul[np.bitwise_and(w, np.uint64(0xff))])
         
         
     def a_mul(self, w):
         # print(w)
-        return np.bitwise_xor(np.left_shift(w, np.uint64(8)), self.strumok_alpha_mul[np.right_shift(w, np.uint64(56))])
+        return np.bitwise_xor(np.left_shift(w, np.uint64(8)),
+                              self.strumok_alpha_mul[np.right_shift(w, np.uint64(56))])
         
         
     def T(self, w):
@@ -900,17 +893,22 @@ class dstu8848:
 #         return 1
 
 
-
-
-key = np.zeros(8, dtype = np.uint64)
-
-key[7] = 0x8000000000000000
-key[6] = 0x0000000000000000
-key[5] = 0x0000000000000000
-key[4] = 0x0000000000000000
-key[3] = 0x0000000000000000
-key[2] = 0x0000000000000000
-key[1] = 0x0000000000000000
-key[0] = 0x0000000000000000
-# print(type(key[0]))
-a = dstu8848(key, 64, np.array([1,2,3,4], dtype = np.uint64))
+if __name__ == '__main__':
+    key = np.zeros(8, dtype = np.uint64)
+    iv = np.zeros(4, dtype = np.uint64)
+    
+    key[7] = 0x8000000000000000
+    key[6] = 0x0000000000000000
+    key[5] = 0x0000000000000000
+    key[4] = 0x0000000000000000
+    key[3] = 0x0000000000000000
+    key[2] = 0x0000000000000000
+    key[1] = 0x0000000000000000
+    key[0] = 0x0000000000000000
+    
+    iv[0] = 1
+    iv[1] = 2
+    iv[2] = 3
+    iv[3] = 4
+    # print(type(key[0]))
+    a = dstu8848(key, 64, iv)
