@@ -41,9 +41,6 @@ class dstu8848:
             self.S[15] = np.bitwise_not(self.key[0])
             
         elif (key_size == 64):
-            self.key_size = key_size
-            self.iv = iv
-            self.key = key
             # print(type(self.key[7]), type(self.iv[0]), self.key[7], self.iv[0])
             self.S[0] = np.bitwise_xor(self.key[7], self.iv[0])
             # print(self.S[0])
